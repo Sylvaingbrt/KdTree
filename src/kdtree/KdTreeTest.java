@@ -38,6 +38,7 @@ public class KdTreeTest {
 		v_query_points.add(new Point2i(33,25));
 		
 		// Compare result of linear search with kdtree search
+		
 
 		for (Point2i p : v_query_points) {
 
@@ -55,5 +56,14 @@ public class KdTreeTest {
 		    assertTrue(t_min==l_min);
 		}
 	}
+	
+	@Test
+	public void testNombrePoints() {
+		ArrayList<Point2i> v_tree_points = grid();
+		KdTree<Point2i> tree = new KdTree<Point2i>(2, v_tree_points,Integer.MAX_VALUE);
+		assertEquals(v_tree_points.size(),tree.nb_points());
+	}
+	
+	
 	
 }

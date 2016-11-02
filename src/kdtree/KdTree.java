@@ -50,7 +50,7 @@ public class KdTree<Point extends PointI>
 
 	/** Initialize an empty kd-tree
 	 */
-	KdTree(int dim) {
+	public KdTree(int dim) {
 		this.dim_ = dim;
 		this.root_ = null;
 		this.n_points_ = 0;
@@ -59,9 +59,9 @@ public class KdTree<Point extends PointI>
 	/** Initialize the kd-tree from the input point set
 	 *  The input dimension should match the one of the points
 	 */
-	KdTree(int dim, ArrayList<Point> points, int max_depth) {
+	public KdTree(int dim, ArrayList<Point> points, int max_depth) {
 		this.dim_ = dim;
-		this.n_points_ = points.size();
+		//this.n_points_ = points.size();
 		
 		//TODO: replace by a balanced initialization
 		this.n_points_=0;
@@ -203,7 +203,7 @@ public class KdTree<Point extends PointI>
         else
             return contains(node.child_right_, p);
 	}
-	
+		
 }
 
 
