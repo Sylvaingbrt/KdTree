@@ -31,6 +31,9 @@ public class KdTree<Point extends PointI>
 		 * TODO: equality is problematic if we want a truly balanced tree
 		 */
 		int dist1D(Point p) { 
+			if(this.equals(p)){
+				return 0;
+			}
 			return p.get(d_) - pos_.get(d_);
 		}
 	}
@@ -91,18 +94,22 @@ public class KdTree<Point extends PointI>
 	/** Insert a new point in the KdTree.
 	 */
 	void insert(Point p) {
-		n_points_ += 1;
-		
-		if(root_==null) 
-			root_ = new KdNode(p, 0);
-		
-		KdNode node = getParent(p);
-		if(node.dist1D(p)<0) {
-			assert(node.child_left_==null);
-			node.child_left_ = new KdNode(p, (node.d_+1)%dim_);
-		} else {
-			assert(node.child_right_==null);
-			node.child_right_ = new KdNode(p, (node.d_+1)%dim_);
+		if(this.contains(p)){
+		}
+		else{
+			n_points_ += 1;
+			
+			if(root_==null) 
+				root_ = new KdNode(p, 0);
+				
+			KdNode node = getParent(p);
+			if(node.dist1D(p)<0) {
+				assert(node.child_left_==null);
+				node.child_left_ = new KdNode(p, (node.d_+1)%dim_);
+			} else if (node.dist1D(p)>0){
+				assert(node.child_right_==null);
+				node.child_right_ = new KdNode(p, (node.d_+1)%dim_);
+			}
 		}
 	}
 	void delete(Point p) {
@@ -175,10 +182,12 @@ public class KdTree<Point extends PointI>
 
 	    int dist_1D = node.dist1D(point);
 	    KdNode n1, n2;
+	    n1=null;
+	    n2=null;
 	    if( dist_1D < 0 ) {
 	    	n1 = node.child_left_;
 	    	n2 = node.child_right_;
-	    } else {
+	    } else if( dist_1D > 0 ){
 	    	// start by the right node
 	    	n1 = node.child_right_;
 	    	n2 = node.child_left_;
