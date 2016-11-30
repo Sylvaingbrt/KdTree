@@ -31,9 +31,6 @@ public class KdTree<Point extends PointI>
 		 * TODO: equality is problematic if we want a truly balanced tree
 		 */
 		int dist1D(Point p) { 
-			if(this.equals(p)){
-				return 0;
-			}
 			return p.get(d_) - pos_.get(d_);
 		}
 	}
@@ -64,13 +61,9 @@ public class KdTree<Point extends PointI>
 	 */
 	public KdTree(int dim, ArrayList<Point> points, int max_depth) {
 		this.dim_ = dim;
-		//this.n_points_ = points.size();
+		this.n_points_ = points.size();
 		
-		//TODO: replace by a balanced initialization
-		this.n_points_=0;
-		for(Point p : points) {
-			insert(p);
-		}
+		this.root_ = theTree(points, 0, max_depth);
 	
 	}
 	  
@@ -106,12 +99,31 @@ public class KdTree<Point extends PointI>
 			if(node.dist1D(p)<0) {
 				assert(node.child_left_==null);
 				node.child_left_ = new KdNode(p, (node.d_+1)%dim_);
-			} else if (node.dist1D(p)>0){
+			} else{
 				assert(node.child_right_==null);
 				node.child_right_ = new KdNode(p, (node.d_+1)%dim_);
 			}
 		}
 	}
+	
+	KdNode theTree(ArrayList<Point> points, int current_depth, int max_depth){		
+		int dim = rightDim(points);
+		
+		if(points.isEmpty()){
+			return null;
+		}
+		if(points.size()==1 || current_depth>=max_depth){
+			return new KdNode(barycentre(points), dim);
+		}
+		else{
+			points.sort( (Point a, Point b) -> a.get(dim) - b.get(dim) );
+			KdNode node = chosenNode(points, dim);
+			node.child_left_ = theTree(leftNodes(points), current_depth+1, max_depth);
+			node.child_right_ = theTree(rightNodes(points), current_depth+1, max_depth);
+			return node;
+		}
+	}
+
 	void delete(Point p) {
 		assert(false);
 	}
@@ -182,12 +194,10 @@ public class KdTree<Point extends PointI>
 
 	    int dist_1D = node.dist1D(point);
 	    KdNode n1, n2;
-	    n1=null;
-	    n2=null;
 	    if( dist_1D < 0 ) {
 	    	n1 = node.child_left_;
 	    	n2 = node.child_right_;
-	    } else if( dist_1D > 0 ){
+	    } else{
 	    	// start by the right node
 	    	n1 = node.child_right_;
 	    	n2 = node.child_left_;
@@ -211,6 +221,55 @@ public class KdTree<Point extends PointI>
             return contains(node.child_left_, p);
         else
             return contains(node.child_right_, p);
+	}
+	
+	private ArrayList<Point> leftNodes(ArrayList<Point> points) {
+		return new ArrayList<Point> (points.subList(0, points.size() /2));
+	}
+
+	private ArrayList<Point> rightNodes(ArrayList<Point> points) {
+		return new ArrayList<Point> (points.subList((points.size()/2)+1,points.size()));
+	}
+
+	private KdNode chosenNode(ArrayList<Point> points, int dim) {
+		return new KdNode(points.get(points.size()/2),dim);
+	}
+
+	private Point barycentre(ArrayList<Point> points) {
+		Point b = points.remove(0);
+		for(Point p: points)
+			b.add(p);
+		b.div(points.size()+1);
+		return b;
+	}
+
+	private int rightDim(ArrayList<Point> points) {
+		int bestDim = 0;
+		float var = variance (points, bestDim);
+		for(int i=0; i<this.dim_;i++){
+			if(var<variance(points,i)){
+				var=variance(points,i);
+				bestDim = i;
+			}
+		}
+		return bestDim;
+	}
+
+	private float variance(ArrayList<Point> points, int bestDim) {
+		float m = moyenne(points, bestDim);
+		float sum = 0;
+		for(Point p : points){
+			sum += (p.get(bestDim) - m) * (p.get(bestDim) - m);
+		}
+		return sum / points.size();
+	}
+
+	private float moyenne(ArrayList<Point> points, int bestDim) {
+		float sum = 0;
+		for(Point p : points){
+			sum += p.get(bestDim);
+		}
+		return sum / points.size();
 	}
 		
 }

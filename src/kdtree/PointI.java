@@ -1,5 +1,7 @@
 package kdtree;
 
+import java.util.ArrayList;
+
 public abstract class PointI 
 {
 	protected int v[]; 
@@ -40,4 +42,30 @@ public abstract class PointI
 	
 	// this method should be static but that's not possible in Java...
 	public abstract PointI zero();
+	
+	public void insert(ArrayList<PointI> L, int maxSize, int Dself, PointI relative){
+		int size = L.size();
+		if(size == 0){
+			L.add(this);
+		}else if(!L.contains(this)){
+			if(size < maxSize){
+				int j = 0;
+				while(j<size && Dself < L.get(j).sqrDist(relative)){
+					j += 1;	
+				}
+				L.add(j, this);
+			}else{
+				int j = 0;
+				while(j < size - 1 && Dself <= L.get(j).sqrDist(relative)){
+					L.set(j, L.get(j+1));
+					j += 1;
+				}
+				if(j==size - 1){
+					L.set(j, this);
+				}else{
+					L.set(j-1, this);
+				}
+			}
+		}
+	}
 }

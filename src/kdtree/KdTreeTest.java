@@ -68,7 +68,7 @@ public class KdTreeTest {
 		tree.insert(new Point2i(6,12));
 		tree.insert(new Point2i(5,1));
 		assertEquals(v_tree_points.size()+4,tree.nb_points());
-		tree.insert(new Point2i(0,0));
+		tree.insert(new Point2i(10,10));
 		assertEquals(v_tree_points.size()+4,tree.nb_points());
 		}
 	
