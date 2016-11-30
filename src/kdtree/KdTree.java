@@ -62,7 +62,6 @@ public class KdTree<Point extends PointI>
 	public KdTree(int dim, ArrayList<Point> points, int max_depth) {
 		this.dim_ = dim;
 		this.n_points_ = points.size();
-		
 		this.root_ = theTree(points, 0, max_depth);
 	
 	}
